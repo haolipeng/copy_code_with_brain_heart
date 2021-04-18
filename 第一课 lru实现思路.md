@@ -28,9 +28,9 @@ LRU简写是(Least Recently Used)，意义为最近最少访问，LRU算法的�
 
 2、将所有缓存值都存到双向链表中，在队尾新增一条记录以及删除一条记录的复杂度均为O(1)
 
-**值类型是interface类型**
+**缓存值类型是interface类型**
 
-为了通用性，我们允许值是实现了 Value 接口的任意类型，该接口只包含了一个方法 Len() int，用于返回值所占用的内存大小。
+为了通用性，我们允许值是实现了 Value 接口的任意类型，该接口只包含了一个方法 Len() int，用于返回缓存值所占用的内存大小。
 
 ```go
 // Value use Len to count how many bytes it takes
