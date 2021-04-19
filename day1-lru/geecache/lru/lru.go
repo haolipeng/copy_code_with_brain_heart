@@ -4,9 +4,11 @@ import (
 	"container/list"
 )
 
+// Cache
 //核心结构体
 //1.map 存储键和值的映射关系
 //2.双向链表 保存所有缓存值
+//3.约定链表的front头为访问多的一端，链表的back端为访问少的一端，方便移动元素。
 type Cache struct {
 	//允许使用的最大内存
 	maxBytes int64
@@ -48,17 +50,18 @@ func (c *Cache) Get(key string) (Value, bool) {
 	return nil, false
 }
 
-//删除接口
+// RemoveOldest 删除接口
 //即淘汰最近最少访问的数据
 func (c *Cache) RemoveOldest() {
 	//1.取队尾元素
 	ele := c.ll.Back()
 
-	//2.如存在，则从双向链表中删除
+	//2.如存在，则更新链表和映射表中对应项
 	if ele != nil {
+		//把该节点从链表中删除
 		c.ll.Remove(ele)
 
-		//3.从字典中删除该节点的对应关系
+		//3.从字典中删除该节点的映射关系
 		kv := ele.Value.(*entry)
 		delete(c.cache, kv.key)
 
@@ -79,14 +82,14 @@ func (c *Cache) Add(key string, value Value) {
 		//2.1 将节点移动到队首
 		c.ll.MoveToFront(ele)
 
-		//2.2 计算当前占用内存(新值 减去 旧值的差值)
+		//2.2 计算当前占用内存(key未更新，只有value更新，所以为新值 减去 旧值的差值)
 		kv := ele.Value.(*entry)
 		c.nBytes += int64(value.Len() - kv.value.Len())
 
 		//2.3 更新value值
 		kv.value = value
 
-		//2.4 2-3两步不能颠倒顺序
+		//2.2 2-3两步不能颠倒顺序，否则计算错误
 	} else {
 		//3.不存在（新增场景）
 		//3.1 构建新节点插入到队首
@@ -105,7 +108,7 @@ func (c *Cache) Add(key string, value Value) {
 	}
 }
 
-//value是任意类型
+// Value 表示任意类型，凡是实现了Len()接口的都可作为缓存的值
 type Value interface {
 	Len() int
 }
