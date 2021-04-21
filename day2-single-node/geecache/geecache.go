@@ -24,8 +24,8 @@ var (
 type Group struct {
 	name string //group name
 	//在这块我出错了，getter变量到底应该填写什么类型呢？
-	getter    GetterFunc //getter function，缓存未命中时调用
-	mainCache cache      //主存
+	getter    Getter //getter function，缓存未命中时调用
+	mainCache cache  //主存
 }
 
 // NewGroup 创建缓存组
@@ -91,7 +91,7 @@ func (g *Group) load(key string) (ByteView, error) {
 
 func (g *Group) getLocally(key string) (ByteView, error) {
 	//1.调用用户注册的Getter函数
-	b, err := g.getter(key)
+	b, err := g.getter.Get(key)
 	if err != nil {
 		return ByteView{}, err
 	}
