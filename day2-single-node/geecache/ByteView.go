@@ -1,5 +1,6 @@
 package geecache
 
+//ByteView 缓存值的抽象和封装
 type ByteView struct {
 	b []byte //使用byte作为缓存值类型，就是
 }

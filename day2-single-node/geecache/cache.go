@@ -13,7 +13,7 @@ type cache struct {
 }
 
 //add函数 fix bug:c cache -> c *cache
-//方法在传指针和传对象有啥区别呢?
+//TODO:方法在传指针和传对象有啥区别呢?
 func (c cache) add(key string, value ByteView) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
