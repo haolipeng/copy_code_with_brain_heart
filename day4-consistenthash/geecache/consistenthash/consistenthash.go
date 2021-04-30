@@ -1,6 +1,7 @@
 package consistenthash
 
 import (
+	"hash/crc32"
 	"sort"
 	"strconv"
 )
@@ -23,7 +24,11 @@ type Map struct {
 }
 
 func New(replies int, hash Hash) *Map {
-	return &Map{replies: replies, hash: hash}
+	m := &Map{replies: replies, hash: hash}
+	if m.hash == nil {
+		m.hash = crc32.ChecksumIEEE
+	}
+	return m
 }
 
 //Add 可一次性添加多个缓存服务器
