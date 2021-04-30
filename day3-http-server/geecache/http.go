@@ -1,6 +1,8 @@
 package geecache
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -21,6 +23,10 @@ func NewHTTPPool(self string) *HTTPPool {
 	}
 }
 
+func (p *HTTPPool) Log(format string, v ...interface{}) {
+	log.Printf("[Server %s] %s", p.self, fmt.Sprintf(format, v...))
+}
+
 //ServeHTTP的http请求访问格式为 /<basepath>/<groupname>/<key>
 func (p *HTTPPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//1.判断访问路径的前缀是否是basePath
@@ -28,10 +34,13 @@ func (p *HTTPPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		panic("HTTPPool serving unexpected path: " + r.URL.Path)
 	}
 
+	//打印出http的url路径和方法
+	p.Log("%s %s", r.Method, r.URL.Path)
+
 	// /<basepath>/<groupname>/<key> required
 	// 2.从请求url中解析出groupname和key
 	parts := strings.SplitN(r.URL.Path[len(p.basePath):], "/", 2)
-	if len(parts) == 2 {
+	if len(parts) != 2 { //单元测试出这里有问题
 		http.Error(w, "bad request", http.StatusBadRequest)
 		return
 	}
