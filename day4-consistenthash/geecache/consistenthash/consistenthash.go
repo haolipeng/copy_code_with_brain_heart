@@ -46,7 +46,25 @@ func (m *Map) Add(keys ...string) {
 	sort.Ints(m.keys)
 }
 
-// Get 从缓存中获取指定名称的缓存数据
-func (m *Map) Get(key string) {
+// Get 选择缓存节点的函数
+func (m *Map) Get(key string) string {
+	//校验数据有效性
+	if key == "" {
+		return ""
+	}
 
+	//1.计算key的哈希值
+	keyHash := int(m.hash([]byte(key)))
+
+	//顺时针找到哈希环上第一个匹配的虚拟节点的下标idx
+	idx := sort.Search(len(m.keys), func(i int) bool {
+		return m.keys[i] >= keyHash
+	})
+
+	//定位到虚拟缓存节点
+	virNodeHash := m.keys[idx%len(m.keys)]
+
+	//从虚拟缓存节点找到真实缓存节点
+	node := m.hashMap[virNodeHash]
+	return node
 }
