@@ -24,7 +24,11 @@ type Map struct {
 }
 
 func New(replies int, hash Hash) *Map {
-	m := &Map{replies: replies, hash: hash}
+	m := &Map{
+		replies: replies,
+		hash:    hash,
+		hashMap: make(map[int]string), //初始化map函数
+	}
 	if m.hash == nil {
 		m.hash = crc32.ChecksumIEEE
 	}
