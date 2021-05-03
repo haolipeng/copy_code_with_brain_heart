@@ -27,7 +27,7 @@ func New(replies int, hash Hash) *Map {
 	m := &Map{
 		replies: replies,
 		hash:    hash,
-		hashMap: make(map[int]string), //初始化map函数，map是必须要进行初始化的
+		hashMap: make(map[int]string), //初始化map函数
 	}
 	if m.hash == nil {
 		m.hash = crc32.ChecksumIEEE
